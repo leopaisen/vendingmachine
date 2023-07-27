@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import Map from './components/Map';
+import AddVendingMachine from './components/AddVendingMachine';
+import VendingMachineList from './components/VendingMachineList';
 
-function App() {
+const App = () => {
+  const [vendingMachines, setVendingMachines] = useState([]);
+
+  // 自動販売機の位置情報を取得する関数
+  const fetchVendingMachines = async () => {
+    try {
+      const response = await fetch('/api/vending-machines');
+      const data = await response.json();
+      setVendingMachines(data);
+    } catch (error) {
+      console.log('Error fetching vending machines:', error);
+    }
+  };
+
+  // 初回レンダリング時に自動販売機の位置情報を取得します
+  useEffect(() => {
+    fetchVendingMachines();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>じはんきさがせ</h1>
+      <AddVendingMachine fetchVendingMachines={fetchVendingMachines} />
+      <Map vendingMachines={vendingMachines} />
+      <VendingMachineList vendingMachines={vendingMachines} />
     </div>
   );
-}
+};
 
 export default App;
